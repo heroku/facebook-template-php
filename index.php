@@ -1,0 +1,3 @@
+<?php
+	Print "Hello world!";
+?>
