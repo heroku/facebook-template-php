@@ -161,7 +161,7 @@ body {
     </script>
 
 <?php if (!$fb->userId) { ?>
-  <h3>Registration for Purple Vole</h3>
+  <h3>Registration</h3>
   <iframe src="<?php echo $registration_plugin_url; ?>"
           scrolling="auto"
           frameborder="no"
