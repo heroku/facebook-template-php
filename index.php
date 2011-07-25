@@ -55,9 +55,6 @@ class Facebook {
     $curlErrorNo = curl_errno($ch);
     curl_close($ch);
 
-    var_dump($curlErrorNo);
-    var_dump($decoded);
-
     if ($curlErrorNo !== 0 || (is_array($decoded) && isset($decoded['error'])))
       throw new FacebookApiException($decoded, $curlErrorNo);
     return $decoded;
