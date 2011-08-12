@@ -67,8 +67,8 @@ class Facebook {
 
 function FB() {
   $fb = new Facebook(array(
-    'appId' => $_ENV['FACEBOOK_APP_ID'],
-    'secret' => $_ENV['FACEBOOK_SECRET']
+    'appId' => getenv('FACEBOOK_APP_ID'),
+    'secret' => getenv('FACEBOOK_SECRET')
   ));
   header('P3P: CP=HONK'); // cookies for iframes in IE
   session_start();
