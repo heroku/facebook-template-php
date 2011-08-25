@@ -1,191 +1,235 @@
 <?php
-function idx($array, $key, $default=null) {
-  return array_key_exists($key, $array) ? $array[$key] : $default;
-}
+// Copyright 2004-present Facebook. All Rights Reserved.
 
-class FacebookApiException extends Exception {
-  public function __construct($response, $curlErrorNo) {
-    $this->response = $response;
-    $this->curlErrorNo = $curlErrorNo;
-  }
-}
 
-class Facebook {
-  public function __construct($opts) {
-    $this->appId = $opts['appId'];
-    $this->secret = $opts['secret'];
-    $this->accessToken = idx($opts, 'accessToken');
-    $this->userId = idx($opts, 'userId');
-    $this->session = idx($opts, 'session');
-    $this->signedRequest = idx($opts, 'signedRequest', array());
-    $this->maxSignedRequestAge = idx($opts, 'maxSignedRequestAge', 86400);
-  }
+/**
+ * This sample app is provided to kickstart your experience using Facebook's
+ * resources for developers.  This sample app provides examples of several
+ * key concepts, including authentication, the Graph API, and FQL (Facebook
+ * Query Language). Please visit the docs at 'developers.facebook.com/docs'
+ * to learn more about the resources available to you
+ */
 
-  public function loadSignedRequest($signedRequest) {
-    list($signature, $payload) = explode('.', $signedRequest, 2);
-    $data = json_decode(self::base64UrlDecode($payload), true);
-    if (isset($data['issued_at']) &&
-        $data['issued_at'] > time() - $this->maxSignedRequestAge &&
-        self::base64UrlDecode($signature) ==
-          hash_hmac('sha256', $payload, $this->secret, $raw=true)) {
-      $this->signedRequest = $data;
-      $this->userId = idx($data, 'user_id');
-      $this->accessToken = idx($data, 'oauth_token');
-    }
-  }
+// Provides access to Facebook specific utilities defined in 'FBUtils.php'
+require_once('FBUtils.php');
+// Provides access to app specific values such as your app id and app secret.
+// Defined in 'AppInfo.php'
+require_once('AppInfo.php');
+// This provides access to helper functions defined in 'utils.php'
+require_once('utils.php');
 
-  public function api($path, $params=null, $method='GET', $domain='graph') {
-    if (!$params) $params = array();
-    if ($domain == 'graph')
-    	$params['method'] = $method;
-    if (!array_key_exists('access_token', $params) && $this->accessToken)
-      $params['access_token'] = $this->accessToken;
-    $ch = curl_init();
-    curl_setopt_array($ch, array(
-      CURLOPT_CONNECTTIMEOUT => 10,
-      CURLOPT_HTTPHEADER     => array('Expect:'),
-      CURLOPT_POSTFIELDS     => http_build_query($params, null, '&'),
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_TIMEOUT        => 60,
-      CURLOPT_URL            => "https://$domain.facebook.com$path",
-      CURLOPT_USERAGENT      => 'sample-0.1',
-    ));
-    $result = curl_exec($ch);
-    $decoded = json_decode($result, true);
-    $curlErrorNo = curl_errno($ch);
-    curl_close($ch);
-
-    if ($curlErrorNo !== 0 || (is_array($decoded) && isset($decoded['error'])))
-      throw new FacebookApiException($decoded, $curlErrorNo);
-    return $decoded;
-  }
-
-  public static function base64UrlDecode($input) {
-    return base64_decode(strtr($input, '-_', '+/'));
-  }
-}
-
-function FB() {
-  $fb = new Facebook(array(
-    'appId' => getenv('FACEBOOK_APP_ID'),
-    'secret' => getenv('FACEBOOK_SECRET')
-  ));
-  header('P3P: CP=HONK'); // cookies for iframes in IE
-  session_start();
-  $cookie_name = 'fbs_' . $fb->appId;
-  error_log("testing");
-  if (isset($_POST['signed_request'])) {
-    $fb->loadSignedRequest($_POST['signed_request']);
-    $_SESSION['facebook_user_id'] = $fb->userId;
-    $_SESSION['facebook_access_token'] = $fb->accessToken;
-  } else if (isset($_COOKIE[$cookie_name])) {
-  	$session = array();
-    parse_str(trim(
-            get_magic_quotes_gpc()
-              ? stripslashes($_COOKIE[$cookie_name])
-              : $_COOKIE[$cookie_name],
-            '"'
-          ), $session);	
-     // TODO Validate Session
-     $fb->userId = $session['uid'];
-     $fb->accessToken = $session['access_token'];
-     $fb->session = $session;
-  } else {
-    $fb->userId = idx($_SESSION, 'facebook_user_id');
-    $fb->accessToken = idx($_SESSION, 'facebook_access_token');
-  }
-  return $fb;
-}
-
-$fb = FB();
-$registration_plugin_url =
-  'http://www.facebook.com/plugins/registration.php?' .
-  http_build_query(array(
-    'client_id' => $fb->appId,
-    'fb_only' => 'true',
-    'redirect_uri' => "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}",
-    'fields' => 'name,email'));
-?>
-
-<!-- 
- * A simple Facebook PHP example for Sample App
+/*****************************************************************************
  *
- * - Majority of PHP code from: https://gist.github.com/818006
- *		- (written by Naitik Shah <n@daaku.org>
- * - Additions for Sample App written by Aryeh Selekman <aryeh@selekman.com>
--->
+ * The content below provides examples of how to fetch Facebook data using the
+ * Graph API and FQL.  It uses the helper functions defined in 'utils.php' to
+ * do so.  You should change this section so that it prepares all of the
+ * information that you want to display to the user.
+ *
+ ****************************************************************************/
 
-<html>
-<head>
-<style type="text/css">
+// Log the user in, and get their access token
+$token = FBUtils::login(AppInfo::getHome());
+if ($token) {
 
-body {
-	max-width: 630px;
-	padding: 10px;
-	border-style: solid;
-	border-width: 1px;
-	height: 500px;
-	width: 630px;
-	font-family: sans-serif;
+  // Fetch the viewer's basic information, using the token just provided
+  $basic = FBUtils::fetchFromFBGraph("me?access_token=$token");
+  $my_id = assertNumeric(idx($basic, 'id'));
+
+  // Fetch the basic info of the app that they are using
+  $app_id = AppInfo::appID();
+  $app_info = FBUtils::fetchFromFBGraph("$app_id?access_token=$token");
+
+  // This fetches some things that you like . 'limit=*" only returns * values.
+  // To see the format of the data you are retrieving, use the "Graph API
+  // Explorer" which is at https://developers.facebook.com/tools/explorer/
+  $likes = array_values(
+    idx(FBUtils::fetchFromFBGraph("me/likes?access_token=$token&limit=11"), 'data')
+  );
+
+  // This fetches 5 of your friends.
+  $friends = array_values(
+    idx(FBUtils::fetchFromFBGraph("me/friends?access_token=$token&limit=5"), 'data')
+  );
+
+  // And this returns 2 of your photos.
+  $photos = array_values(
+    idx($raw = FBUtils::fetchFromFBGraph("me/photos?access_token=$token&limit=2"), 'data')
+  );
+
+  // Here is an example of a FQL call that fetches all of your friends that are
+  // using this app
+  $app_using_friends = FBUtils::fql(
+    "SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1",
+    $token
+  );
+
+  // This formats our home URL so that we can pass it as a web request
+  $encoded_home = urlencode(AppInfo::getHome());
+
+  // These two URL's are links to dialogs that you will be able to use to share
+  // your app with others.  Look under the documentation for dialogs at
+  // developers.facebook.com for more information
+  $send_url = "https://www.facebook.com/dialog/send?redirect_uri=$encoded_home&display=page&app_id=$app_id&link=$encoded_home";
+  $post_to_wall_url = "https://www.facebook.com/dialog/feed?redirect_uri=$encoded_home&display=page&app_id=$app_id";
+} else {
+  // Stop running if we did not get a valid response from logging in
+  exit("Invalid credentials");
 }
-
-</style>
-</head>
-<body>
-<div id="fb-root"></div>
-
-    <script>
-      window.fbAsyncInit = function() {
-        FB.init({
-          appId   : <?php echo $fb->appId; ?>,
-          status  : true, // check login status
-          cookie  : true, // enable cookies to allow the server to access the session
-          xfbml   : true // parse XFBML
-        });
-
-        // whenever the user logs in, we refresh the page
-        FB.Event.subscribe('auth.login', function() {
-          window.location.reload();
-        });
-      };
-
-      (function() {
-        var e = document.createElement('script');
-        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-        e.async = true;
-        document.getElementById('fb-root').appendChild(e);
-      }());
-    </script>
-
-<?php if (!$fb->userId) { ?>
-  <h3>Registration</h3>
-  <iframe src="<?php echo $registration_plugin_url; ?>"
-          scrolling="auto"
-          frameborder="no"
-          style="border:none"
-          allowTransparency="true"
-          width="610"
-          height="330">
-  </iframe>
-<?php } else { 
-	$me = 	$fb->api('/me', array('fields' => 'first_name'));
-	$firstName = $me['first_name'];
-	$appPath = '/' . $fb->appId;
-	$appData = $fb->api($appPath);
-	$appName = $appData['name'];
 ?>
-<h3>Welcome to <?php echo $appName; ?>, <?php echo $firstName; ?>!</h3>
-<h4>Get Started with The Facebook <a href='http://graph.facebook.com'>Graph API</a></h4>
-<p> Friends using <?php echo $appName; ?>:</p>
-<?php 
-$friends = $fb->api('/method/fql.query', 
-		array('query' => 'SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1', 
-		'format' => 'json'), 
-		'GET', 
-		'api');
-foreach ($friends as $friend) {
-		echo '<img src="' . $friend['pic_square'] .'"</img> ' . $friend['name'] . '<br/>';
-	}
-} ?>
-</body>
+
+<!-- This following code is responsible for rendering the HTML   -->
+<!-- content on the page.  Here we use the information generated -->
+<!-- in the above requests to display content that is personal   -->
+<!-- to whomever views the page.  You would rewrite this content -->
+<!-- with your own HTML content.  Be sure that you sanitize any  -->
+<!-- content that you will be displaying to the user.  idx() by  -->
+<!-- default will remove any html tags from the value being      -->
+<!-- and echoEntity() will echo the sanitized content.  Both of  -->
+<!-- these functions are located and documented in 'utils.php'.  -->
+<html>
+  <head>
+    <!-- We get the name of the app out of the information fetched -->
+    <title><?php echo(idx($app_info, 'name')) ?></title>
+    <link type="text/css" rel="stylesheet" href="style.css">
+  </head>
+  <body>
+  <div class="content">
+    <!--  Display the app name and user's name from the data fetched -->
+    <h2>
+      Welcome to
+      <?php echo(idx($app_info, 'name') . ', ' . idx($basic, 'name') . '.'); ?>
+    </h2>
+    <table cellspacing="30">
+      <tr>
+        <td valign="top">
+          <h3> Your Picture: </h3>
+          <!-- By passing a valid access token here, we are able to display -->
+          <!-- the user's images without having to download or prepare -->
+          <!-- them ahead of time -->
+          <a
+            href="#"
+            onclick="window.open('http://www.facebook.com/<?php echo($my_id) ?>')">
+            <img
+              src="https://graph.facebook.com/me/picture?type=large&access_token=<?php echoEntity($token) ?>"
+              width="200"
+            />
+          </a>
+        </td>
+        <td valign="top">
+          <h3> Friends using this app: </h3>
+          <table border="0">
+            <?php
+              foreach ($app_using_friends as $auf) {
+                // Extract the pieces of info we need from the requests above
+                $uid = assertNumeric(idx($auf, 'uid'));
+                $pic = idx($auf, 'pic_square');
+                $name = idx($auf, 'name');
+                echo('
+                  <tr>
+                    <td>
+                      <a
+                        href="#"
+                        onclick="window.open(\'http://www.facebook.com/' . $uid . '\')">
+                        <img src=' .$pic . '/>
+                      </a>
+                    </td>
+                    <td>' . $name . '</td>
+                  <tr>');
+              }
+            ?>
+          </table>
+        </td>
+        <td valign="top">
+          <h3> Share your app: </h3>
+          <p>
+            <!-- Here we use the link for the 'Send Dialog' from earlier-->
+            <a href="#" onclick="top.location.href = '<?php echo($send_url) ?>'">
+              Send your app to your friends
+            </a>
+          </p>
+          <p>
+            <!-- This displays the other dialog link, which allows users -->
+            <!-- to share this app on their wall -->
+            <a
+              href="#"
+              onclick="top.location.href = '<?php echo($post_to_wall_url) ?>'">
+              Post to your wall
+            </a>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top">
+          <h3> Recent Photos: </h3>
+          <?php
+            foreach ($photos as $photo) {
+              // Extract the pieces of info we need from the requests above
+              $src = idx($photo, 'source');
+              $id = assertNumeric(idx($photo, 'id'));
+
+              // Here we link each photo we display to it's location on Facebook
+              echo('
+                <p>
+                  <a
+                    href="#"
+                    onclick="window.open(\'http://www.facebook.com/' .$id . '\')">
+                    <img src="' .$src . '" width="200" />
+                  </a>
+                </p>'
+              );
+            }
+          ?>
+        </td>
+        <td valign="top">
+          <h3> A few of your friends: </h3>
+          <table border="0">
+            <?php
+              foreach ($friends as $friend) {
+                // Extract the pieces of info we need from the requests above
+                $id = assertNumeric(idx($friend, 'id'));
+                $name = idx($friend, 'name');
+                // Here we link each friend we display to their profile
+                echo('
+                  <tr>
+                    <td>
+                      <a
+                        href="#"
+                        onclick="window.open(\'http://www.facebook.com/' . $id . '\')">
+                        <img src="https://graph.facebook.com/' . $id . '/picture"/>
+                      </a>
+                    </td>
+                    <td>' . $name . ' </td>
+                  <tr>'
+                );
+              }
+            ?>
+          </table>
+        </td>
+        <td valign="top">
+          <h3> Things you like: </h3>
+          <ul>
+            <?php
+              foreach ($likes as $like) {
+                // Extract the pieces of info we need from the requests above
+                $id = assertNumeric(idx($like, 'id'));
+                $item = idx($like, 'name');
+                // This display's the object that the user liked as a link to
+                // that object's page.
+                echo('
+                  <li>
+                    <a
+                      href="#"
+                      onclick="window.open(\'http://www.facebook.com/' .$id .'\')">' .
+                      $item .
+                    '</a>
+                  </li>'
+                );
+              }
+            ?>
+          </ul>
+        </td>
+      </tr>
+    <table>
+  </div>
+  </body>
 </html>
