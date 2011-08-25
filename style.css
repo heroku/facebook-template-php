@@ -1,0 +1,44 @@
+/* style.css */
+
+.content {
+  background: #CFCFCF;
+  border: 2px solid gray;
+  color: black;
+}
+
+a:link {
+  text-decoration:none;
+}
+
+a:hover {
+  text-decoration:underline;
+}
+
+h2 {
+  text-align: center;
+}
+
+h2, h3 {
+  font-family: Tahoma, Geneva, sans-serif;
+}
+
+img {
+  border: 2px solid gray;
+}
+
+img:hover {
+  border: 2px solid #69AAFF;
+}
+
+li {
+  padding: 3px;
+}
+
+p {
+  font-family: Georgia, serif;
+}
+
+ul {
+  list-style-type: square;
+}
+
