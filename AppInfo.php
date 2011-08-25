@@ -34,7 +34,7 @@ class AppInfo {
    * @return the home URL for this site
    */
   public static function getHome (){
-   return "https://apps.facebook.com/m-sample-new/";
+   return "https://apps.facebook.com/m-new-sample/";
   }
 
 }
