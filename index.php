@@ -64,13 +64,13 @@ if ($token) {
   );
 
   // This formats our home URL so that we can pass it as a web request
-  $encoded_home = urlencode(AppInfo::getHome());
+  $encoded_home = urlencode(AppInfo::getHome() .'close.php');
 
   // These two URL's are links to dialogs that you will be able to use to share
   // your app with others.  Look under the documentation for dialogs at
   // developers.facebook.com for more information
-  $send_url = "https://www.facebook.com/dialog/send?redirect_uri=$encoded_home&display=page&app_id=$app_id&link=$encoded_home";
-  $post_to_wall_url = "https://www.facebook.com/dialog/feed?redirect_uri=$encoded_home&display=page&app_id=$app_id";
+  $send_url = "https://www.facebook.com/dialog/send?redirect_uri=$encoded_home&display=popup&app_id=$app_id&link=$encoded_home";
+  $post_to_wall_url = "https://www.facebook.com/dialog/feed?redirect_uri=$encoded_home&display=popup&app_id=$app_id";
 } else {
   // Stop running if we did not get a valid response from logging in
   exit("Invalid credentials");
@@ -91,6 +91,28 @@ if ($token) {
     <!-- We get the name of the app out of the information fetched -->
     <title><?php echo(idx($app_info, 'name')) ?></title>
     <link type="text/css" rel="stylesheet" href="style.css">
+    <!-- These are Open Graph tags.  They add meta data to your  -->
+    <!-- site that facebook uses when your content is shared     -->
+    <!-- over facebook.  You should fill these tags in with      -->
+    <!-- your data.  To learn more about Open Graph, visit       -->
+    <!-- 'https://developers.facebook.com/docs/opengraph/'       -->
+    <meta property="og:title" content=""/>
+    <meta property="og:type" content=""/>
+    <meta property="og:url" content=""/>
+    <meta property="og:image" content=""/>
+    <meta property="og:site_name" content=""/>
+    <?php echo('<meta property="fb:app_id" content="' . AppInfo::appID() . '" />'); ?>
+  <script type="text/javascript">
+    function popup(pageURL, title,w,h) {
+      var left = (screen.width/2)-(w/2);
+      var top = (screen.height/2)-(h/2);
+      var targetWin = window.open(
+        pageURL,
+        title,
+        'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left
+        );
+    }
+  </script>
   </head>
   <body>
   <div class="content">
@@ -133,7 +155,7 @@ if ($token) {
                         <img src=' .$pic . '/>
                       </a>
                     </td>
-                    <td>' . $name . '</td>
+                    <td> <p>' . $name . '</p> </td>
                   <tr>');
               }
             ?>
@@ -143,7 +165,9 @@ if ($token) {
           <h3> Share your app: </h3>
           <p>
             <!-- Here we use the link for the 'Send Dialog' from earlier-->
-            <a href="#" onclick="top.location.href = '<?php echo($send_url) ?>'">
+            <a
+              href="#"
+              onclick="popup('<?php echo $send_url ?>', 'Send', 580, 400);">
               Send your app to your friends
             </a>
           </p>
@@ -152,8 +176,29 @@ if ($token) {
             <!-- to share this app on their wall -->
             <a
               href="#"
-              onclick="top.location.href = '<?php echo($post_to_wall_url) ?>'">
+              onclick="popup('<?php echo $post_to_wall_url ?>', 'Post to Wall', 580, 400);">
               Post to your wall
+            </a>
+          </p>
+        </td>
+        <td valign="top">
+          <h3> Getting Started Guides: </h3>
+          <p>
+            <a href="#" onclick="window.open('http://developers.facebook.com/docs/guides/web/')">
+              <b>Websites: </b>
+              Drive growth and engagement on your site through Facebook Login and Social Plugins.
+            </a>
+          </p>
+          <p>
+            <a href="#" onclick="window.open('http://developers.facebook.com/docs/guides/canvas/')">
+              <b>Apps on Facebook: </b>
+              Integrate with our core experience by building apps that operate within Facebook.
+            </a>
+          </p>
+          <p>
+            <a href="#" onclick="window.open('http://developers.facebook.com/docs/guides/mobile/')">
+              <b> Mobile: </b> 
+              Let users find and connect to their friends in mobile apps and games.
             </a>
           </p>
         </td>
@@ -198,7 +243,7 @@ if ($token) {
                         <img src="https://graph.facebook.com/' . $id . '/picture"/>
                       </a>
                     </td>
-                    <td>' . $name . ' </td>
+                    <td> <p>' . $name . '</p> </td>
                   <tr>'
                 );
               }
@@ -217,11 +262,13 @@ if ($token) {
                 // that object's page.
                 echo('
                   <li>
-                    <a
-                      href="#"
-                      onclick="window.open(\'http://www.facebook.com/' .$id .'\')">' .
-                      $item .
-                    '</a>
+                    <p>
+                      <a
+                        href="#"
+                        onclick="window.open(\'http://www.facebook.com/' .$id .'\')">' .
+                        $item .
+                      '</a>
+                    </p>
                   </li>'
                 );
               }

@@ -1,9 +1,12 @@
 /* style.css */
 
 .content {
-  background: #CFCFCF;
   border: 2px solid gray;
   color: black;
+}
+
+a {
+  color: #3B5998;
 }
 
 a:link {
@@ -14,31 +17,53 @@ a:hover {
   text-decoration:underline;
 }
 
+body {
+  font-size: 11px;
+  color: #333333;
+  font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+}
+
 h2 {
+  background-color: #EDEFF4;
+  border-bottom: 2px solid gray;
+  color: #1C2A47;
+  font-size: 16px;
+  margin: 0px;
+  padding:10px;
   text-align: center;
 }
 
-h2, h3 {
-  font-family: Tahoma, Geneva, sans-serif;
+
+h3 {
+  color: #666
+  font-size: 14px;
 }
 
 img {
-  border: 2px solid gray;
+  border: 1px solid gray;
 }
 
 img:hover {
-  border: 2px solid #69AAFF;
+  border: 1px solid #3B5998;
 }
 
 li {
-  padding: 3px;
+  padding: 0px;
 }
 
 p {
-  font-family: Georgia, serif;
+  color: #333333;
+  font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+  font-size: 11px;
+}
+
+table {
+  margin-left:auto;
+  margin-right:auto;
 }
 
 ul {
-  list-style-type: square;
+  list-style-type: none;
+  padding: 0px;
 }
 
