@@ -34,7 +34,7 @@ class AppInfo {
    * @return the home URL for this site
    */
   public static function getHome (){
-   return "https://apps.facebook.com/m-new-sample/";
+    return "http://falling-rain-523.herokuapp.com/";
   }
 
 }
