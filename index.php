@@ -232,7 +232,12 @@ if ($token) {
               $uid = assertNumeric(idx($auf, 'uid'));
               $pic = idx($auf, 'pic_square');
               $name = idx($auf, 'name');
-              echo('<li style="background-image: url(' .$pic . ')">' . $name . '</li>');
+              echo('
+                <li style="background-image: url(' .$pic . ')">
+                  <a href="#" onclick="window.open(\'http://www.facebook.com/' .$uid . '\')">
+                    ' . $name . '
+                  </a>
+                </li>');
             }
           ?>
           
