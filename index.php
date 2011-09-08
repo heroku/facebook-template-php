@@ -254,21 +254,21 @@ if ($token) {
           <p>Learn more about <a href="http://www.heroku.com/">Heroku</a>, or read developer docs in the Heroku <a href="http://devcenter.heroku.com/">Dev Center</a>.</p>
         </li>
         <li>
-          <a href="#" class="icon websites">Websites</a>
+          <a href="http://developers.facebook.com/docs/guides/web/" class="icon websites">Websites</a>
           <p>
             Drive growth and engagement on your site through
             Facebook Login and Social Plugins.
           </p>
         </li>
         <li>
-          <a href="#" class="icon mobile-apps">Mobile Apps</a>
+          <a href="http://developers.facebook.com/docs/guides/mobile/" class="icon mobile-apps">Mobile Apps</a>
           <p>
             Integrate with our core exper-ience by building apps
             that operate within Facebook.
           </p>
         </li>
         <li>
-          <a href="#" class="icon apps-on-facebook">Apps on Facebook</a>
+          <a href="http://developers.facebook.com/docs/guides/canvas/" class="icon apps-on-facebook">Apps on Facebook</a>
           <p>Let users find and connect to their friends in mobile apps and games.</p>
         </li>
       </ul>
