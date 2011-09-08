@@ -79,16 +79,24 @@ class FBUtils {
     if (empty($code)) {
       // CSRF protection - for more information, look at 'Security Considerations'
       // at 'https://developers.facebook.com/docs/authentication/'
-      $_SESSION['state'] = md5(uniqid(rand(), TRUE));
+      $state = md5(uniqid(rand(), TRUE));
+      setcookie(
+        AppInfo::appID() . '-fb-app',
+        $state,
+        $expires = 0,
+        $path = "",
+        $domain = "",
+        $secure = "",
+        $httponly = true); 
       // Now form the login URL that you will use to authorize your app
       $authorize_url = "https://www.facebook.com/dialog/oauth?client_id=$app_id" .
-      "&redirect_uri=$home&state=" . $_SESSION['state'] . "&scope=$scope";
+      "&redirect_uri=$home&state=" . $state . "&scope=$scope";
       // Now we redirect the user to the login page
       echo("<script> top.location.href='" . $authorize_url . "'</script>");
       return false;
     // Once we have that code, we can now request an access-token.  We check to
     // ensure that the state has remained the same.
-    } else if ($_REQUEST['state'] === $_SESSION['state']) {
+    } else if ($_REQUEST['state'] === $_COOKIE[AppInfo::appID() . '-fb-app']) {
       $ch = curl_init("https://graph.facebook.com/oauth/access_token");
       curl_setopt($ch, CURLOPT_POSTFIELDS,
         "client_id=$app_id&redirect_uri=$home&client_secret=$app_secret" .
