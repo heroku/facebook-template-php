@@ -64,13 +64,14 @@ if ($token) {
   );
 
   // This formats our home URL so that we can pass it as a web request
-  $encoded_home = urlencode(AppInfo::getHome() .'close.php');
+  $encoded_home = urlencode(AppInfo::getHome());
+  $redirect_url = $encoded_home . 'close.php';
 
   // These two URL's are links to dialogs that you will be able to use to share
   // your app with others.  Look under the documentation for dialogs at
   // developers.facebook.com for more information
-  $send_url = "https://www.facebook.com/dialog/send?redirect_uri=$encoded_home&display=popup&app_id=$app_id&link=$encoded_home";
-  $post_to_wall_url = "https://www.facebook.com/dialog/feed?redirect_uri=$encoded_home&display=popup&app_id=$app_id";
+  $send_url = "https://www.facebook.com/dialog/send?redirect_uri=$redirect_url&display=popup&app_id=$app_id&link=$encoded_home";
+  $post_to_wall_url = "https://www.facebook.com/dialog/feed?redirect_uri=$redirect_url&display=popup&app_id=$app_id";
 } else {
   // Stop running if we did not get a valid response from logging in
   exit("Invalid credentials");
