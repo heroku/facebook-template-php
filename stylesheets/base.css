@@ -47,13 +47,16 @@ header h1 {
   padding: 2px 0 8px;
 }
 
-header img + div {
+header #picture + div {
   margin-left: 82px;
 }
 
-header img {
+header #picture {
   float: left;
   margin-right: 18px;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
 }
 
 header .tagline {
