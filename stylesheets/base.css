@@ -183,8 +183,8 @@ header .tagline {
 #guides ul li,
 #samples .list {
   float: left;
-  margin-right: 9px;
-  width: 170px;
+  margin-right: 7px;
+  width: 172px;
 }
 
 #guides ul li p,
@@ -239,21 +239,22 @@ header .tagline {
 --------------------------------------------- */
 #samples {
   background-image: url("../images/samples-bg.png");
-  /*
-   * original
+  /* original */
   background-image: -moz-linear-gradient(top, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 1.5%, rgba(0, 0, 0, 0) 100%), url("../images/samples-bg.png");
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(0, 0, 0, .25)), color-stop(1.5%, rgba(0, 0, 0, 0)), color-stop(100%, rgba(0, 0, 0, 0))), url("../images/samples-bg.png");
   background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 1.5%, rgba(0, 0, 0, 0) 100%), url("../images/samples-bg.png");
   background-image: -o-linear-gradient(top, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 1.5%, rgba(0, 0, 0, 0) 100%), url("../images/samples-bg.png");
   background-image: -ms-linear-gradient(top, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 1.5%, rgba(0, 0, 0, 0) 100%), url("../images/samples-bg.png");
   background-image: linear-gradient(top, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, 0) 1.5%, rgba(0, 0, 0, 0) 100%), url("../images/samples-bg.png");
-  */
 
-  /* concept */
+  /*
+   * concept
+  */
   border-bottom: 1px solid #ccc;
   -moz-box-shadow: 0 0 13px rgba(0, 0, 0, .2) inset;
   -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, .2) inset;
   box-shadow: 0 0 3px rgba(0, 0, 0, .2) inset;
+  border-bottom: 1px solid #ccc;
 }
 
 #samples h3 {
@@ -266,55 +267,54 @@ header .tagline {
 }
 
 #samples ul {
+  background: url("../images/picture-sketch.png") 4px 8px;
   background-repeat: repeat-y;
-  height: 198px;
+  height: 161px;
   overflow: hidden;
   padding-top: 8px;
 }
 
-#samples ul.photos,
-#samples ul.friends {
-  background: none;
-}
-
 #samples li {
-  background-repeat: no-repeat;
-  background-position: top left;
   color: #7c7c7c;
   display: block;
   font-size: 11px;
   font-weight: bold;
+  height: 32px;
   line-height: 32px;
   margin-bottom: 11px;
+  overflow: hidden;
   padding-left: 36px;
+  position: relative;
 }
 
-#samples ul.friends li {
-  padding-left: 54px;
-  line-height: 50px;
+#samples .list img {
+  height: auto;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 32px;
 }
 
-#samples ul.things li {
-  padding-left: 12px;
-  line-height: 18px;
-  white-space:nowrap;
-}
-
-#samples ul.photos li {
-  margin-left: 0;
-  height: 82px;
+#samples .inline img {
+  position: static;
 }
 
 #samples .inline ul {
   background-repeat: repeat;
 }
+
 #samples .inline li {
   float: left;
-  height: 32px;
   margin-left: 12px;
   overflow: hidden;
   padding: 0;
+  width: 32px;
 }
+
+#samples .inline li.first-column {
+  margin-left: 0;
+}
+
 
 /* ------------------------------------------ */
 
