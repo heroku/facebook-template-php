@@ -132,14 +132,12 @@ if ($token) {
       <!-- By passing a valid access token here, we are able to display -->
       <!-- the user's images without having to download or prepare -->
       <!-- them ahead of time -->
-      <a
-        href="#"
-        onclick="window.open('http://www.facebook.com/<?php echo($my_id) ?>')">
+      <p id="picture">
         <img
           src="https://graph.facebook.com/me/picture?type=large&access_token=<?php echoEntity($token) ?>"
           height="64"
         />
-      </a>
+      </p>
 
       <div>
         <h1>Welcome, <strong><?php echo idx($basic, 'name'); ?></strong></h1>
@@ -240,10 +238,9 @@ if ($token) {
               $pic = idx($auf, 'pic_square');
               $name = idx($auf, 'name');
               echo('
-                <li style="background-image: url(' .$pic . ')">
-                  <a href="#" onclick="window.open(\'http://www.facebook.com/' .$uid . '\')">
-                    ' . $name . '
-                  </a>
+                <li>
+                  <img src="https://graph.facebook.com/' . $uid . '/picture?type=small" alt="' . $name . '">
+                  ' . $name . '
                 </li>');
             }
           ?>
