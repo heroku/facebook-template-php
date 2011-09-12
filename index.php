@@ -107,17 +107,25 @@ if ($token) {
     <meta property="og:image" content=""/>
     <meta property="og:site_name" content=""/>
     <?php echo('<meta property="fb:app_id" content="' . AppInfo::appID() . '" />'); ?>
-  <script type="text/javascript">
-    function popup(pageURL, title,w,h) {
-      var left = (screen.width/2)-(w/2);
-      var top = (screen.height/2)-(h/2);
-      var targetWin = window.open(
-        pageURL,
-        title,
-        'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left
-        );
-    }
-  </script>
+    <script>
+      function popup(pageURL, title,w,h) {
+        var left = (screen.width/2)-(w/2);
+        var top = (screen.height/2)-(h/2);
+        var targetWin = window.open(
+          pageURL,
+          title,
+          'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left
+          );
+      }
+    </script>
+    <!--[if IE]>
+      <link rel="stylesheet" href="stylesheets/ie.css" media="screen">
+      <script>
+        var tags = ['header', 'section'];
+        while(tags.length)
+          document.createElement(tags.pop());
+      </script>
+    <![endif]-->
   </head>
   <body>
     <header class="clearfix">
@@ -171,10 +179,9 @@ if ($token) {
               $name = idx($friend, 'name');
               // Here we link each friend we display to their profile
               echo('
-                <li style="background-image: url(https://graph.facebook.com/' . $id . '/picture)">
-                  <a href="#" onclick="window.open(\'http://www.facebook.com/' . $id . '\')">
-                      ' . $name . '
-                  </a>
+                <li>
+                  <img src="https://graph.facebook.com/' . $id . '/picture?type=small" alt="' . $name . '">'
+                  . $name . '
                 </li>');
             }
           ?>
@@ -185,17 +192,17 @@ if ($token) {
         <h3>Recent photos</h3>
         <ul class="photos">
           <?php
-            foreach ($photos as $photo) {
+            foreach ($photos as $key => $photo) {
               // Extract the pieces of info we need from the requests above
               $src = idx($photo, 'source');
+              $name = idx($photo, 'name');
               $id = assertNumeric(idx($photo, 'id'));
+              $class = ($key%4 === 0) ? ' class="first-column"' : '';
 
               // Here we link each photo we display to it's location on Facebook
               echo('
-                <li>
-                  <a href="#" onclick="window.open(\'http://www.facebook.com/' .$id . '\')">
-                    <img src="' .$src . '" width="163" />
-                  </a>
+                <li' . $class . '>
+                    <img src="' .$src . '" alt="' . $name . '" />
                 </li>'
               );
             }
@@ -215,9 +222,8 @@ if ($token) {
               // that object's page.
               echo('
                 <li>
-                  <a href="#" onclick="window.open(\'http://www.facebook.com/' .$id .'\')">
-                    ' . $item . '
-                  </a>
+                  <img src="https://graph.facebook.com/' . $id . '/picture?type=small" alt="' . $item . '">
+                  ' . $item . '
                 </li>');
             }
           ?>
@@ -241,7 +247,6 @@ if ($token) {
                 </li>');
             }
           ?>
-          
         </ul>
       </div>
     </section>
