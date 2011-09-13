@@ -131,7 +131,7 @@ if ($token) {
       <!-- By passing a valid access token here, we are able to display -->
       <!-- the user's images without having to download or prepare -->
       <!-- them ahead of time -->
-      <p id="picture" style="background: url(https://graph.facebook.com/me/picture?type=large&access_token=<?php echoEntity($token) ?>)"></p>
+      <p id="picture" style="background: url(https://graph.facebook.com/me/picture?type=normal&access_token=<?php echoEntity($token) ?>)"></p>
 
       <div>
         <h1>Welcome, <strong><?php echo idx($basic, 'name'); ?></strong></h1>
