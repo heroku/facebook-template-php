@@ -43,17 +43,17 @@ if ($token) {
   // To see the format of the data you are retrieving, use the "Graph API
   // Explorer" which is at https://developers.facebook.com/tools/explorer/
   $likes = array_values(
-    idx(FBUtils::fetchFromFBGraph("me/likes?access_token=$token&limit=11"), 'data')
+    idx(FBUtils::fetchFromFBGraph("me/likes?access_token=$token&limit=4"), 'data')
   );
 
-  // This fetches 3 of your friends.
+  // This fetches 4 of your friends.
   $friends = array_values(
-    idx(FBUtils::fetchFromFBGraph("me/friends?access_token=$token&limit=3"), 'data')
+    idx(FBUtils::fetchFromFBGraph("me/friends?access_token=$token&limit=4"), 'data')
   );
 
-  // And this returns 2 of your photos.
+  // And this returns 16 of your photos.
   $photos = array_values(
-    idx($raw = FBUtils::fetchFromFBGraph("me/photos?access_token=$token&limit=2"), 'data')
+    idx($raw = FBUtils::fetchFromFBGraph("me/photos?access_token=$token&limit=16"), 'data')
   );
 
   // Here is an example of a FQL call that fetches all of your friends that are
@@ -131,12 +131,7 @@ if ($token) {
       <!-- By passing a valid access token here, we are able to display -->
       <!-- the user's images without having to download or prepare -->
       <!-- them ahead of time -->
-      <p id="picture">
-        <img
-          src="https://graph.facebook.com/me/picture?type=large&access_token=<?php echoEntity($token) ?>"
-          height="64"
-        />
-      </p>
+      <p id="picture" style="background: url(https://graph.facebook.com/me/picture?type=large&access_token=<?php echoEntity($token) ?>)"></p>
 
       <div>
         <h1>Welcome, <strong><?php echo idx($basic, 'name'); ?></strong></h1>
