@@ -119,7 +119,6 @@ if ($token) {
       }
     </script>
     <!--[if IE]>
-      <link rel="stylesheet" href="stylesheets/ie.css" media="screen">
       <script>
         var tags = ['header', 'section'];
         while(tags.length)
@@ -178,7 +177,7 @@ if ($token) {
               // Here we link each friend we display to their profile
               echo('
                 <li>
-                  <img src="https://graph.facebook.com/' . $id . '/picture?type=small" alt="' . $name . '">'
+                  <img src="https://graph.facebook.com/' . $id . '/picture?type=square" alt="' . $name . '">'
                   . $name . '
                 </li>');
             }
@@ -220,7 +219,7 @@ if ($token) {
               // that object's page.
               echo('
                 <li>
-                  <img src="https://graph.facebook.com/' . $id . '/picture?type=small" alt="' . $item . '">
+                  <img src="https://graph.facebook.com/' . $id . '/picture?type=square" alt="' . $item . '">
                   ' . $item . '
                 </li>');
             }
@@ -239,7 +238,7 @@ if ($token) {
               $name = idx($auf, 'name');
               echo('
                 <li>
-                  <img src="https://graph.facebook.com/' . $uid . '/picture?type=small" alt="' . $name . '">
+                  <img src="https://graph.facebook.com/' . $uid . '/picture?type=square" alt="' . $name . '">
                   ' . $name . '
                 </li>');
             }
@@ -276,9 +275,5 @@ if ($token) {
       </ul>
     </section>
   </body>
-    
-    
-    
-    
   </body>
 </html>
