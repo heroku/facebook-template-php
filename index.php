@@ -131,7 +131,7 @@ if ($token) {
       <!-- By passing a valid access token here, we are able to display -->
       <!-- the user's images without having to download or prepare -->
       <!-- them ahead of time -->
-      <p id="picture" style="background: url(https://graph.facebook.com/me/picture?type=normal&access_token=<?php echoEntity($token) ?>)"></p>
+      <p id="picture" style="background-image: url(https://graph.facebook.com/me/picture?type=normal&access_token=<?php echoEntity($token) ?>)"></p>
 
       <div>
         <h1>Welcome, <strong><?php echo idx($basic, 'name'); ?></strong></h1>
@@ -175,8 +175,10 @@ if ($token) {
               // Here we link each friend we display to their profile
               echo('
                 <li>
-                  <img src="https://graph.facebook.com/' . $id . '/picture?type=square" alt="' . $name . '">'
-                  . $name . '
+                  <a href="#" onclick="window.open(\'http://www.facebook.com/' . $id . '\')">
+                    <img src="https://graph.facebook.com/' . $id . '/picture?type=square" alt="' . $name . '">'
+                    . $name . '
+                  </a>
                 </li>');
             }
           ?>
@@ -196,8 +198,10 @@ if ($token) {
 
               // Here we link each photo we display to it's location on Facebook
               echo('
-                <li' . $class . '>
-                    <img src="' .$src . '" alt="' . $name . '" />
+                <li style="background-image: url(' . $src . ')"' . $class . '>
+                  <a href="#" onclick="window.open(\'http://www.facebook.com/' .$id . '\')">
+                    ' . $name . '
+                  </a>
                 </li>'
               );
             }
@@ -217,8 +221,10 @@ if ($token) {
               // that object's page.
               echo('
                 <li>
-                  <img src="https://graph.facebook.com/' . $id . '/picture?type=square" alt="' . $item . '">
-                  ' . $item . '
+                  <a href="#" onclick="window.open(\'http://www.facebook.com/' .$id .'\')">
+                    <img src="https://graph.facebook.com/' . $id . '/picture?type=square" alt="' . $item . '">
+                    ' . $item . '
+                  </a>
                 </li>');
             }
           ?>
@@ -236,8 +242,10 @@ if ($token) {
               $name = idx($auf, 'name');
               echo('
                 <li>
-                  <img src="https://graph.facebook.com/' . $uid . '/picture?type=square" alt="' . $name . '">
-                  ' . $name . '
+                  <a href="#" onclick="window.open(\'http://www.facebook.com/' .$uid . '\')">
+                    <img src="https://graph.facebook.com/' . $uid . '/picture?type=square" alt="' . $name . '">
+                    ' . $name . '
+                  </a>
                 </li>');
             }
           ?>
