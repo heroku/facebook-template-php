@@ -1,6 +1,11 @@
 <?php
 // Copyright 2004-present Facebook. All Rights Reserved.
 
+// Enforce https on production
+if ($_SERVER['HTTP_X_FORWARDED_PROTO'] == "http" && $_SERVER['REMOTE_ADDR'] != '127.0.0.1') {
+  header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
+  exit();
+}
 
 /**
  * This sample app is provided to kickstart your experience using Facebook's
