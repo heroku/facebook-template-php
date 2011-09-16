@@ -20,7 +20,7 @@
  *         XSS attacks, however if $sanitize is set to false, the raw
  *         values will be returned
  */
-function idx($array, $index, $default = null, $saniztize = true) {
+function idx($array, $index, $default = null, $sanitize = true) {
   if (array_key_exists($index, $array)) {
     $value = $array[$index];
   } else {
