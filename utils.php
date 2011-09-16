@@ -28,7 +28,10 @@ function idx($array, $index, $default = null, $saniztize = true) {
     $value = $default;
   }
   if ($sanitize) {
-    return htmlentities($value);
+    // FIXME: $value can be an array, and htmlentities only accepts strings.
+    // Sanitization has to be done differently.
+    //return htmlentities($value);
+    return $value;
   } else {
     return $value;
   }
