@@ -285,5 +285,4 @@ if ($token) {
       </ul>
     </section>
   </body>
-  </body>
 </html>
