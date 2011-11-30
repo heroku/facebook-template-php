@@ -91,7 +91,7 @@ class FBUtils {
       $authorize_url = "https://www.facebook.com/dialog/oauth?client_id=$app_id" .
       "&redirect_uri=$home&state=" . $state . "&scope=$scope";
       // Now we redirect the user to the login page
-      echo("<script> top.location.href='" . $authorize_url . "'</script>");
+      echo("<script> window.location.href='" . $authorize_url . "'</script>");
       return false;
     // Once we have that code, we can now request an access-token.  We check to
     // ensure that the state has remained the same.
