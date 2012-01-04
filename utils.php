@@ -27,7 +27,7 @@ function idx($array, $index, $default = null, $sanitize = true) {
     $value = $default;
   }
   if ($sanitize) {
-    return htmlentities($value);
+    return is_string($value) ? htmlentities($value) : $value;
   } else {
     return $value;
   }
