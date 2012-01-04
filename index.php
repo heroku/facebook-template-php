@@ -47,17 +47,17 @@ if ($token) {
   // To see the format of the data you are retrieving, use the "Graph API
   // Explorer" which is at https://developers.facebook.com/tools/explorer/
   $likes = array_values(
-    idx(FBUtils::fetchFromFBGraph("me/likes?access_token=$token&limit=4"), 'data')
+    idx(FBUtils::fetchFromFBGraph("me/likes?access_token=$token&limit=4"), 'data', null, false)
   );
 
   // This fetches 4 of your friends.
   $friends = array_values(
-    idx(FBUtils::fetchFromFBGraph("me/friends?access_token=$token&limit=4"), 'data')
+    idx(FBUtils::fetchFromFBGraph("me/friends?access_token=$token&limit=4"), 'data', null, false)
   );
 
   // And this returns 16 of your photos.
   $photos = array_values(
-    idx($raw = FBUtils::fetchFromFBGraph("me/photos?access_token=$token&limit=16"), 'data')
+    idx($raw = FBUtils::fetchFromFBGraph("me/photos?access_token=$token&limit=16"), 'data', null, false)
   );
 
   // Here is an example of a FQL call that fetches all of your friends that are
