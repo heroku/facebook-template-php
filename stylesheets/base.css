@@ -10,8 +10,11 @@ body {
   font: 14px/1.5em "Lucida Grande", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   width: 742px;
+  margin: 20px;
+}
 
-  margin: 20px; /* NOTE: Temporary */
+body.canvas {
+  margin: 20px 0;
 }
 
 a:link, a:visited {
@@ -69,7 +72,7 @@ header .tagline {
 
 #share-app {
   float: right;
-  width: 318px;
+  width: 425px;
 }
 
 #share-app ul {
@@ -125,6 +128,10 @@ header .tagline {
 
 .facebook-button .plus {
   background-position: 6px -17px;
+}
+
+.facebook-button .apprequests {
+  background-position: 6px -37px;
 }
 
 .button:link, .button:visited {
@@ -220,10 +227,6 @@ header .tagline {
   -webkit-hyphens: auto;
   line-height: 20px;
   text-align: justify;
-}
-
-#guides ul li:first-child {
-  margin-left: 0;
 }
 
 #guides ul li a.icon {
