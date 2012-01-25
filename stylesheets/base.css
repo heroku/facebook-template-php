@@ -9,12 +9,8 @@ body {
   color: #999;
   font: 14px/1.5em "Lucida Grande", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
-  width: 742px;
+  width: 720px;
   margin: 20px;
-}
-
-body.canvas {
-  margin: 20px 0;
 }
 
 a:link, a:visited {
@@ -59,6 +55,7 @@ header #picture + div {
 header #picture {
   background-position: center 25%;
   background-repeat: no-repeat;
+  background-size: 64px;
   float: left;
   margin-right: 18px;
   width: 64px;
@@ -193,13 +190,13 @@ header .tagline {
 }
 
 #guides, #samples {
-  padding: 20px 10px 20px 14px;
+  padding: 20px 5px 20px 10px;
 }
 
 #guides ul li,
 #samples .list {
   float: left;
-  margin-right: 7px;
+  margin-right: 3px;
   width: 172px;
 }
 

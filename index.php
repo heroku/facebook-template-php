@@ -18,17 +18,6 @@ if (substr(AppInfo::getUrl(), 0, 8) != 'https://' && $_SERVER['REMOTE_ADDR'] != 
   exit();
 }
 
-$types = array(
-  'website',
-  'canvas',
-  'mobile'
-);
-
-$type = $types[0];
-if (isset($_REQUEST['type']) && in_array($_REQUEST['type'], $types)) {
-  $type = $_REQUEST['type'];
-}
-
 // This provides access to helper functions defined in 'utils.php'
 require_once('utils.php');
 
@@ -72,7 +61,7 @@ if ($user_id) {
   $friends = idx($facebook->api('/me/friends?limit=4'), 'data', array());
 
   // And this returns 16 of your photos.
-  $photos = idx($facebook->api('/me/photos?limit=16'), 'data', array());
+  $photos = idx($facebook->api('/me/photos?limit=16&return_ssl_resources=1'), 'data', array());
 
   // Here is an example of a FQL call that fetches all of your friends that are
   // using this app
@@ -129,44 +118,62 @@ $app_name = idx($app_info, 'name', '');
     <meta property="og:description" content="My first app" />
     <meta property="fb:app_id" content="<?php echo AppInfo::appID(); ?>" />
 
+    <script type="text/javascript" src="/javascript/jquery-1.7.1.min.js"></script>
+
     <script type="text/javascript">
-      function handleDialogResponse(response) {
-        if (response && response.post_id) {
-          alert('Success.');
-        } else {
-          alert('Canceled or failed.');
+      function logResponse(response) {
+        if (console && console.log) {
+          console.log('The response was', response);
         }
-        return true;
       }
 
-      function showDialog(method, app_id, link) {
-        FB.ui(
-          {
-            method: method,
-            app_id: app_id,
-            link: link
-          },
-          handleDialogResponse
-        );
-      }
+      $(function(){
+        // Set up so we handle click on the buttons
+        $('#postToWall').click(function() {
+          FB.ui(
+            {
+              method : 'feed',
+              link   : $(this).attr('data-url')
+            },
+            function (response) {
+              // If response is null the user canceled the dialog
+              if (response != null) {
+                logResponse(response);
+              }
+            }
+          );
+        });
 
-      function postToWall(app_id, link) {
-        showDialog('feed', app_id, link);
-      }
+        $('#sendToFriends').click(function() {
+          FB.ui(
+            {
+              method : 'send',
+              link   : $(this).attr('data-url')
+            },
+            function (response) {
+              // If response is null the user canceled the dialog
+              if (response != null) {
+                logResponse(response);
+              }
+            }
+          );
+        });
 
-      function sendToFriends(app_id, link) {
-        showDialog('send', app_id, link);
-      }
-
-      function sendRequest() {
-        FB.ui(
-          {
-            method: 'apprequests',
-            message: 'Test this awesome app'
-          },
-          handleDialogResponse
-        );
-      }
+        $('#sendRequest').click(function() {
+          FB.ui(
+            {
+              method  : 'apprequests',
+              message : $(this).attr('data-message')
+            },
+            function (response) {
+              // If response is null the user canceled the dialog
+              if (response != null) {
+                logResponse(response);
+              }
+            }
+          );
+        });
+      });
     </script>
 
     <!--[if IE]>
@@ -177,7 +184,7 @@ $app_name = idx($app_info, 'name', '');
       </script>
     <![endif]-->
   </head>
-  <body class="<?php echo $type; ?>">
+  <body>
     <div id="fb-root"></div>
     <script type="text/javascript">
       window.fbAsyncInit = function() {
@@ -186,15 +193,16 @@ $app_name = idx($app_info, 'name', '');
           channelUrl : '//<?php echo $_SERVER["HTTP_HOST"]; ?>/channel.html', // Channel File
           status     : true, // check login status
           cookie     : true, // enable cookies to allow the server to access the session
-          xfbml      : true, // parse XFBML
-          oauth      : true,
+          xfbml      : true // parse XFBML
         });
 
         FB.Event.subscribe('auth.login', function(response) {
-          // We don't want to do a reload because if we are in canvas mode we
-          // can have gotten a POST and then we will throw up a alert if we
-          // reload
-          window.location = '<?php echo he(AppInfo::getUrl($_SERVER['REQUEST_URI'])); ?>';
+          // We want to reload the page now so PHP can read the cookie that the
+          // Javascript SDK sat. But we don't want to use
+          // window.location.reload() because if this is in a canvas there was a
+          // post made to this page and a reload will trigger a message to the
+          // user asking if they want to send data again.
+          window.location = window.location;
         });
 
         FB.Canvas.setAutoGrow();
@@ -205,7 +213,7 @@ $app_name = idx($app_info, 'name', '');
         var js, fjs = d.getElementsByTagName(s)[0];
         if (d.getElementById(id)) return;
         js = d.createElement(s); js.id = id;
-        js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=<?php echo AppInfo::appID(); ?>";
+        js.src = "//connect.facebook.net/en_US/all.js";
         fjs.parentNode.insertBefore(js, fjs);
       }(document, 'script', 'facebook-jssdk'));
     </script>
@@ -218,24 +226,24 @@ $app_name = idx($app_info, 'name', '');
         <h1>Welcome, <strong><?php echo he(idx($basic, 'name')); ?></strong></h1>
         <p class="tagline">
           This is your app
-          <a href="<?php echo he(idx($app_info, 'link'));?>"><?php echo he($app_name); ?></a>
+          <a href="<?php echo he(idx($app_info, 'link'));?>" target="_top"><?php echo he($app_name); ?></a>
         </p>
 
         <div id="share-app">
           <p>Share your app:</p>
           <ul>
             <li>
-              <a href="#" class="facebook-button" onclick="postToWall('<?php echo AppInfo::appID(); ?>', '<?php echo AppInfo::getUrl(); ?>');">
+              <a href="#" class="facebook-button" id="postToWall" data-url="<?php echo AppInfo::getUrl(); ?>">
                 <span class="plus">Post to Wall</span>
               </a>
             </li>
             <li>
-              <a href="#" class="facebook-button speech-bubble" onclick="sendToFriends('<?php echo AppInfo::appID(); ?>', '<?php echo AppInfo::getUrl(); ?>');">
+              <a href="#" class="facebook-button speech-bubble" id="sendToFriends"  data-url="<?php echo AppInfo::getUrl(); ?>">
                 <span class="speech-bubble">Send Message</span>
               </a>
             </li>
             <li>
-              <a href="#" class="facebook-button apprequests" onclick="sendRequest();">
+              <a href="#" class="facebook-button apprequests" id="sendRequest" data-message="Test this awesome app">
                 <span class="apprequests">Send Requests</span>
               </a>
             </li>
@@ -252,7 +260,7 @@ $app_name = idx($app_info, 'name', '');
 
     <section id="get-started">
       <p>Welcome to your Facebook app, running on <span>heroku</span>!</p>
-      <a href="http://devcenter.heroku.com/articles/facebook" class="button">Learn How to Edit This App</a>
+      <a href="https://devcenter.heroku.com/articles/facebook" target="_top" class="button">Learn How to Edit This App</a>
     </section>
 
     <?php
@@ -272,7 +280,7 @@ $app_name = idx($app_info, 'name', '');
               $name = idx($friend, 'name');
           ?>
           <li>
-            <a href="http://www.facebook.com/<?php echo he($id); ?>">
+            <a href="https://www.facebook.com/<?php echo he($id); ?>" target="_top">
               <img src="https://graph.facebook.com/<?php echo he($id) ?>/picture?type=square" alt="<?php echo he($name); ?>">
               <?php echo he($name); ?>
             </a>
@@ -297,7 +305,7 @@ $app_name = idx($app_info, 'name', '');
               $class = ($i++ % 4 === 0) ? 'first-column' : '';
           ?>
           <li style="background-image: url(<?php echo he($picture); ?>);" class="<?php echo $class; ?>">
-            <a href="<?php echo he($link); ?>"></a>
+            <a href="<?php echo he($link); ?>" target="_top"></a>
           </li>
           <?php
             }
@@ -318,7 +326,7 @@ $app_name = idx($app_info, 'name', '');
               // that object's page.
           ?>
           <li>
-            <a href="http://www.facebook.com/<?php echo he($id); ?>">
+            <a href="https://www.facebook.com/<?php echo he($id); ?>" target="_top">
               <img src="https://graph.facebook.com/<?php echo he($id) ?>/picture?type=square" alt="<?php echo he($item); ?>">
               <?php echo he($item); ?>
             </a>
@@ -339,7 +347,7 @@ $app_name = idx($app_info, 'name', '');
               $name = idx($auf, 'name');
           ?>
           <li>
-            <a href="http://www.facebook.com/<?php echo he($id); ?>">
+            <a href="https://www.facebook.com/<?php echo he($id); ?>" target="_top">
               <img src="https://graph.facebook.com/<?php echo he($id) ?>/picture?type=square" alt="<?php echo he($name); ?>">
               <?php echo he($name); ?>
             </a>
@@ -359,25 +367,25 @@ $app_name = idx($app_info, 'name', '');
       <h1>Learn More About Heroku &amp; Facebook Apps</h1>
       <ul>
         <li>
-          <a href="http://www.heroku.com/" class="icon heroku">Heroku</a>
-          <p>Learn more about <a href="http://www.heroku.com/">Heroku</a>, or read developer docs in the Heroku <a href="http://devcenter.heroku.com/">Dev Center</a>.</p>
+          <a href="https://www.heroku.com/" target="_top" class="icon heroku">Heroku</a>
+          <p>Learn more about <a href="https://www.heroku.com/" target="_top">Heroku</a>, or read developer docs in the Heroku <a href="https://devcenter.heroku.com/" target="_top">Dev Center</a>.</p>
         </li>
         <li>
-          <a href="http://developers.facebook.com/docs/guides/web/" class="icon websites">Websites</a>
+          <a href="https://developers.facebook.com/docs/guides/web/" target="_top" class="icon websites">Websites</a>
           <p>
             Drive growth and engagement on your site with
             Facebook Login and Social Plugins.
           </p>
         </li>
         <li>
-          <a href="http://developers.facebook.com/docs/guides/mobile/" class="icon mobile-apps">Mobile Apps</a>
+          <a href="https://developers.facebook.com/docs/guides/mobile/" target="_top" class="icon mobile-apps">Mobile Apps</a>
           <p>
             Integrate with our core experience by building apps
             that operate within Facebook.
           </p>
         </li>
         <li>
-          <a href="http://developers.facebook.com/docs/guides/canvas/" class="icon apps-on-facebook">Apps on Facebook</a>
+          <a href="https://developers.facebook.com/docs/guides/canvas/" target="_top" class="icon apps-on-facebook">Apps on Facebook</a>
           <p>Let users find and connect to their friends in mobile apps and games.</p>
         </li>
       </ul>
