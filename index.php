@@ -61,7 +61,7 @@ if ($user_id) {
   $friends = idx($facebook->api('/me/friends?limit=4'), 'data', array());
 
   // And this returns 16 of your photos.
-  $photos = idx($facebook->api('/me/photos?limit=16&return_ssl_resources=1'), 'data', array());
+  $photos = idx($facebook->api('/me/photos?limit=16'), 'data', array());
 
   // Here is an example of a FQL call that fetches all of your friends that are
   // using this app
@@ -238,7 +238,7 @@ $app_name = idx($app_info, 'name', '');
               </a>
             </li>
             <li>
-              <a href="#" class="facebook-button speech-bubble" id="sendToFriends"  data-url="<?php echo AppInfo::getUrl(); ?>">
+              <a href="#" class="facebook-button speech-bubble" id="sendToFriends" data-url="<?php echo AppInfo::getUrl(); ?>">
                 <span class="speech-bubble">Send Message</span>
               </a>
             </li>
