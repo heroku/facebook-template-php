@@ -76,19 +76,6 @@ $app_info = $facebook->api('/'. AppInfo::appID());
 
 $app_name = idx($app_info, 'name', '');
 
-/*
-
-<!-- This following code is responsible for rendering the HTML   -->
-<!-- content on the page.  Here we use the information generated -->
-<!-- in the above requests to display content that is personal   -->
-<!-- to whomever views the page.  You would rewrite this content -->
-<!-- with your own HTML content.  Be sure that you sanitize any  -->
-<!-- content that you will be displaying to the user.  idx() by  -->
-<!-- default will remove any html tags from the value being      -->
-<!-- and echoEntity() will echo the sanitized content.  Both of  -->
-<!-- these functions are located and documented in 'utils.php'.  -->
-
-*/
 ?>
 <!DOCTYPE html>
 <html xmlns:fb="http://ogp.me/ns/fb#" lang="en">
@@ -96,7 +83,6 @@ $app_name = idx($app_info, 'name', '');
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
 
-    <!-- We get the name of the app out of the information fetched -->
     <title><?php echo he($app_name); ?></title>
     <link rel="stylesheet" href="stylesheets/screen.css" media="Screen" type="text/css" />
     <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-width: 480px), only screen and (max-device-width: 480px)" type="text/css" />
@@ -196,6 +182,8 @@ $app_name = idx($app_info, 'name', '');
           xfbml      : true // parse XFBML
         });
 
+        // Listen to the auth.login which will be called when the user logs in
+        // using the Login button
         FB.Event.subscribe('auth.login', function(response) {
           // We want to reload the page now so PHP can read the cookie that the
           // Javascript SDK sat. But we don't want to use
