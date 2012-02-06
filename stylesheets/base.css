@@ -69,7 +69,7 @@ header .tagline {
 
 #share-app {
   float: right;
-  width: 425px;
+  width: 344px;
 }
 
 #share-app ul {
@@ -78,6 +78,7 @@ header .tagline {
 
 #share-app p {
   float: left;
+  margin-left: 8px;
 }
 
 #share-app li {
