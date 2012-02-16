@@ -355,8 +355,8 @@ $app_name = idx($app_info, 'name', '');
       <h1>Learn More About Heroku &amp; Facebook Apps</h1>
       <ul>
         <li>
-          <a href="https://www.heroku.com/" target="_top" class="icon heroku">Heroku</a>
-          <p>Learn more about <a href="https://www.heroku.com/" target="_top">Heroku</a>, or read developer docs in the Heroku <a href="https://devcenter.heroku.com/" target="_top">Dev Center</a>.</p>
+          <a href="https://www.heroku.com/?utm_source=facebook&utm_medium=app&utm_campaign=fb_integration" target="_top" class="icon heroku">Heroku</a>
+          <p>Learn more about <a href="https://www.heroku.com/?utm_source=facebook&utm_medium=app&utm_campaign=fb_integration" target="_top">Heroku</a>, or read developer docs in the Heroku <a href="https://devcenter.heroku.com/" target="_top">Dev Center</a>.</p>
         </li>
         <li>
           <a href="https://developers.facebook.com/docs/guides/web/" target="_top" class="icon websites">Websites</a>
