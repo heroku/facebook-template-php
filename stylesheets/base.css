@@ -110,6 +110,7 @@ header .tagline {
   font-weight: bold;
   line-height: 20px;
   margin: 0;
+  padding: 0 7px;
   outline: none;
   text-decoration: none;
   text-shadow: 0 1px 1px rgba(255, 255, 255, .33);
@@ -117,19 +118,19 @@ header .tagline {
 
 .facebook-button span {
   background: url("../images/sprites.png") no-repeat;
-  padding: 0 7px 0 21px;
+  padding-left: 14px;
 }
 
 .facebook-button .speech-bubble {
-  background-position: 6px 3px;
+  background-position: 0 3px;
 }
 
 .facebook-button .plus {
-  background-position: 6px -17px;
+  background-position: 0 -17px;
 }
 
 .facebook-button .apprequests {
-  background-position: 6px -37px;
+  background-position: 0 -37px;
 }
 
 .button:link, .button:visited {
