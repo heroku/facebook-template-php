@@ -146,7 +146,7 @@ $app_name = idx($app_info, 'name', '');
             }
           );
         });
-
+<p>This is my app, I can edit it all I want.</p>
         $('#sendRequest').click(function() {
           FB.ui(
             {
