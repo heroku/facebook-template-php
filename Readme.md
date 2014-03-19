@@ -21,15 +21,10 @@ Copy the App ID and Secret from the Facebook app settings page into your `Virtua
 
 Restart Apache, and you should be able to visit your app at its local URL.
 
-Deploy to Heroku via Facebook integration
------------------------------------------
-
-The easiest way to deploy is to create an app on Facebook and click Cloud Services -> Get Started, then choose PHP from the dropdown.  You can then `git clone` the resulting app from Heroku.
-
 Deploy to Heroku directly
 -------------------------
 
-If you prefer to deploy yourself, push this code to a new Heroku app on the Cedar stack, then copy the App ID and Secret into your config vars:
+To push this code to a new Heroku app on the Cedar stack, copy the App ID and Secret into your config vars:
 
     heroku create --stack cedar
     git push heroku master
