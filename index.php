@@ -31,13 +31,13 @@ require_once('utils.php');
  *
  ****************************************************************************/
 
-require_once('sdk/src/facebook.php');
+require('vendor/autoload.php');
 
 $facebook = new Facebook(array(
   'appId'  => AppInfo::appID(),
   'secret' => AppInfo::appSecret(),
   'sharedSession' => true,
-  'trustForwarded' => true,
+  'allowSignedRequest' => false
 ));
 
 $user_id = $facebook->getUser();
@@ -49,7 +49,11 @@ if ($user_id) {
     // If the call fails we check if we still have a user. The user will be
     // cleared if the error is because of an invalid accesstoken
     if (!$facebook->getUser()) {
-      header('Location: '. AppInfo::getUrl($_SERVER['REQUEST_URI']));
+      $login_url = $facebook->getLoginUrl();
+      echo 'Please <a href="' . $login_url . '">login.</a>';
+      error_log($e->getType());
+      error_log($e->getMessage());
+      //header('Location: '. AppInfo::getUrl($_SERVER['REQUEST_URI']));
       exit();
     }
   }
