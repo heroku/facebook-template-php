@@ -81,24 +81,6 @@ if ($session) {
 
 }
 
-
-/*
-// $user_id = $facebook->getUser();
-// if ($user_id) {
-//   try {
-//     // Fetch the viewer's basic information
-//     $basic = $facebook->api('/me');
-//   } catch (FacebookApiException $e) {
-//     // If the call fails we check if we still have a user. The user will be
-//     // cleared if the error is because of an invalid accesstoken
-//     if (!$facebook->
-// ()) {
-//       header('Location: '. AppInfo::getUrl($_SERVER['REQUEST_URI']));
-//       exit();
-//     }
-//   }
-*/
-
 	$likes = (new FacebookRequest(
       $session, 'GET', '/me/likes?limit=4'
     ))->execute()->getGraphObject()->getProperty('data')->asArray();
@@ -113,38 +95,6 @@ if ($session) {
       $session, 'GET', '/me/photos?limit=4'
     ))->execute()->getGraphObject()->getProperty('data')->asArray();
 
-
-
-	echo "XXXX";
-	print_r( $likes);
-	echo "XXXX";
-
-
-
-
-/*
-  // This fetches some things that you like . 'limit=*" only returns * values.
-  // To see the format of the data you are retrieving, use the "Graph API
-  // Explorer" which is at https://developers.facebook.com/tools/explorer/
-  $likes = idx($facebook->api('/me/likes?limit=4'), 'data', array());
-
-  // This fetches 4 of your friends.
-  $friends = idx($facebook->api('/me/friends?limit=4'), 'data', array());
-
-  // And this returns 16 of your photos.
-  $photos = idx($facebook->api('/me/photos?limit=16'), 'data', array());
-
-  // Here is an example of a FQL call that fetches all of your friends that are
-  // using this app
-  $app_using_friends = $facebook->api(array(
-    'method' => 'fql.query',
-    'query' => 'SELECT uid, name FROM user WHERE uid IN(SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1'
-  ));
-}
-
-// Fetch the basic info of the app that they are using
-$app_info = $facebook->api('/'. AppInfo::appID());
-*/
 $app_name = $app_info->getProperty('name');
 
 ?>
