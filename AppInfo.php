@@ -49,7 +49,7 @@ class AppInfo {
 
 
   /**
-   * @return the appSecret for this app
+   * @return hardcoded appName for this app
    */
   public static function appName() {
     $name=getenv('APP_NAME');
