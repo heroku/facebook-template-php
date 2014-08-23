@@ -30,20 +30,13 @@ use Facebook\FacebookCanvasLoginHelper;
  * information that you want to display to the user.
  *
  ****************************************************************************/
-/*
-require_once('sdk/src/facebook.php');
 
-$facebook = new Facebook(array(
-  'appId'  => AppInfo::appID(),
-  'secret' => AppInfo::appSecret(),
-  'sharedSession' => true,
-  'trustForwarded' => true,
-));
-*/
 use Facebook\FacebookSession;
 use Facebook\FacebookRequest;
 use Facebook\GraphUser;
+use Facebook\FacebookJavaScriptLoginHelper;
 FacebookSession::setDefaultApplication(AppInfo::appID(), AppInfo::appSecret());
+$app_name = AppInfo::appName();
 $helper = new FacebookCanvasLoginHelper();
 
 
@@ -77,9 +70,9 @@ if ($session) {
 	    ))->execute()->getGraphObject();
 
 
+	$app_name = $app_info->getProperty('name');
 	
-
-}
+	
 
 	$likes = (new FacebookRequest(
       $session, 'GET', '/me/likes?limit=4'
@@ -95,7 +88,6 @@ if ($session) {
       $session, 'GET', '/me/photos?limit=4'
     ))->execute()->getGraphObject()->getProperty('data')->asArray();
 
-$app_name = $app_info->getProperty('name');
 
 ?>
 <!DOCTYPE html>
@@ -273,7 +265,7 @@ $app_name = $app_info->getProperty('name');
     </section>
 
     <?php
-      if ($user_id) {
+      if ($session) {
     ?>
 
     <section id="samples" class="clearfix">
