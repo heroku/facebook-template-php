@@ -43,8 +43,12 @@ $helper = new FacebookCanvasLoginHelper();
 try {
   $session = $helper->getSession();
 } catch(FacebookRequestException $ex) {
+	
+	
   // When Facebook returns an error
 } catch(\Exception $ex) {
+	
+	
   // When validation fails or other local issues
 }
 
@@ -62,6 +66,7 @@ if ($session) {
 
     echo "Exception occured, code: " . $e->getCode();
     echo " with message: " . $e->getMessage();
+
 
   }   
  
@@ -87,6 +92,10 @@ if ($session) {
   $photos = (new FacebookRequest(
       $session, 'GET', '/me/photos?limit=4'
     ))->execute()->getGraphObject()->getProperty('data')->asArray();
+	
+
+}
+
 
 
 ?>
