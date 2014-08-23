@@ -46,4 +46,19 @@ class AppInfo {
     return $protocol . $_SERVER['HTTP_HOST'] . $path;
   }
 
+
+
+  /**
+   * @return hardcoded appName for this app
+   */
+  public static function appName() {
+    $name=getenv('APP_NAME');
+	if($name)
+		return $name;
+	else
+		return "APP_NAME";
+  }
+
+
+
 }

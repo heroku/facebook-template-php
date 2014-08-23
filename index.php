@@ -20,7 +20,7 @@ if (substr(AppInfo::getUrl(), 0, 8) != 'https://' && $_SERVER['REMOTE_ADDR'] != 
 
 // This provides access to helper functions defined in 'utils.php'
 require_once('utils.php');
-
+use Facebook\FacebookCanvasLoginHelper; 
 
 /*****************************************************************************
  *
@@ -31,52 +31,72 @@ require_once('utils.php');
  *
  ****************************************************************************/
 
-require_once('sdk/src/facebook.php');
+use Facebook\FacebookSession;
+use Facebook\FacebookRequest;
+use Facebook\GraphUser;
+use Facebook\FacebookJavaScriptLoginHelper;
+FacebookSession::setDefaultApplication(AppInfo::appID(), AppInfo::appSecret());
+$app_name = AppInfo::appName();
+$helper = new FacebookCanvasLoginHelper();
 
-$facebook = new Facebook(array(
-  'appId'  => AppInfo::appID(),
-  'secret' => AppInfo::appSecret(),
-  'sharedSession' => true,
-  'trustForwarded' => true,
-));
 
-$user_id = $facebook->getUser();
-if ($user_id) {
-  try {
-    // Fetch the viewer's basic information
-    $basic = $facebook->api('/me');
-  } catch (FacebookApiException $e) {
-    // If the call fails we check if we still have a user. The user will be
-    // cleared if the error is because of an invalid accesstoken
-    if (!$facebook->getUser()) {
-      header('Location: '. AppInfo::getUrl($_SERVER['REQUEST_URI']));
-      exit();
-    }
-  }
-
-  // This fetches some things that you like . 'limit=*" only returns * values.
-  // To see the format of the data you are retrieving, use the "Graph API
-  // Explorer" which is at https://developers.facebook.com/tools/explorer/
-  $likes = idx($facebook->api('/me/likes?limit=4'), 'data', array());
-
-  // This fetches 4 of your friends.
-  $friends = idx($facebook->api('/me/friends?limit=4'), 'data', array());
-
-  // And this returns 16 of your photos.
-  $photos = idx($facebook->api('/me/photos?limit=16'), 'data', array());
-
-  // Here is an example of a FQL call that fetches all of your friends that are
-  // using this app
-  $app_using_friends = $facebook->api(array(
-    'method' => 'fql.query',
-    'query' => 'SELECT uid, name FROM user WHERE uid IN(SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1'
-  ));
+try {
+  $session = $helper->getSession();
+} catch(FacebookRequestException $ex) {
+	
+	
+  // When Facebook returns an error
+} catch(\Exception $ex) {
+	
+	
+  // When validation fails or other local issues
 }
 
-// Fetch the basic info of the app that they are using
-$app_info = $facebook->api('/'. AppInfo::appID());
 
-$app_name = idx($app_info, 'name', '');
+if ($session) {
+	try {
+
+    $user_profile = (new FacebookRequest(
+      $session, 'GET', '/me'
+    ))->execute()->getGraphObject(GraphUser::className());
+
+    //echo "Name: " . $
+	$user_id = $user_profile -> getId();
+  } catch(FacebookRequestException $e) {
+
+    echo "Exception occured, code: " . $e->getCode();
+    echo " with message: " . $e->getMessage();
+
+
+  }   
+ 
+	$app_info = (new FacebookRequest(
+	      $session, 'GET', '/' . AppInfo::appID()
+	    ))->execute()->getGraphObject();
+
+
+	$app_name = $app_info->getProperty('name');
+	
+	
+
+	$likes = (new FacebookRequest(
+      $session, 'GET', '/me/likes?limit=4'
+    ))->execute()->getGraphObject()->getProperty('data')->asArray();
+
+
+	$friends = (new FacebookRequest(
+      $session, 'GET', '/me/friends?limit=4'
+    ))->execute()->getGraphObject()->getProperty('data')->asArray();
+
+
+  $photos = (new FacebookRequest(
+      $session, 'GET', '/me/photos?limit=4'
+    ))->execute()->getGraphObject()->getProperty('data')->asArray();
+	
+
+}
+
+
 
 ?>
 <!DOCTYPE html>
@@ -209,14 +229,14 @@ $app_name = idx($app_info, 'name', '');
     </script>
 
     <header class="clearfix">
-      <?php if (isset($basic)) { ?>
-      <p id="picture" style="background-image: url(https://graph.facebook.com/<?php echo he($user_id); ?>/picture?type=normal)"></p>
+      <?php if (isset($session)) { ?>
+      <p id="picture" style="background-image: url(https://graph.facebook.com/<?php echo he($user_profile->getId()); ?>/picture?type=normal)"></p>
 
       <div>
-        <h1>Welcome, <strong><?php echo he(idx($basic, 'name')); ?></strong></h1>
+        <h1>Welcome, <strong><?php echo he($user_profile->getName()); ?></strong></h1>
         <p class="tagline">
           This is your app
-          <a href="<?php echo he(idx($app_info, 'link'));?>" target="_top"><?php echo he($app_name); ?></a>
+          <a href="<?php echo he($app_info->getProperty('link'));?>" target="_top"><?php echo he($app_name); ?></a>
         </p>
 
         <div id="share-app">
@@ -243,7 +263,7 @@ $app_name = idx($app_info, 'name', '');
       <?php } else { ?>
       <div>
         <h1>Welcome</h1>
-        <div class="fb-login-button" data-scope="user_likes,user_photos"></div>
+            <div class="fb-login-button" data-scope="user_likes,user_friends,user_photos"></div>
       </div>
       <?php } ?>
     </header>
@@ -254,20 +274,20 @@ $app_name = idx($app_info, 'name', '');
     </section>
 
     <?php
-      if ($user_id) {
+      if ($session) {
     ?>
 
     <section id="samples" class="clearfix">
       <h1>Examples of the Facebook Graph API</h1>
 
       <div class="list">
-        <h3>A few of your friends</h3>
+        <h3>Friends using this app</h3>
         <ul class="friends">
           <?php
             foreach ($friends as $friend) {
               // Extract the pieces of info we need from the requests above
-              $id = idx($friend, 'id');
-              $name = idx($friend, 'name');
+              $id = $friend->id;
+              $name = $friend->name;
           ?>
           <li>
             <a href="https://www.facebook.com/<?php echo he($id); ?>" target="_top">
@@ -288,9 +308,11 @@ $app_name = idx($app_info, 'name', '');
             $i = 0;
             foreach ($photos as $photo) {
               // Extract the pieces of info we need from the requests above
-              $id = idx($photo, 'id');
-              $picture = idx($photo, 'picture');
-              $link = idx($photo, 'link');
+
+
+              $id = $photo->id;
+              $picture = $photo->picture;
+              $link = $photo->link;
 
               $class = ($i++ % 4 === 0) ? 'first-column' : '';
           ?>
@@ -309,9 +331,8 @@ $app_name = idx($app_info, 'name', '');
           <?php
             foreach ($likes as $like) {
               // Extract the pieces of info we need from the requests above
-              $id = idx($like, 'id');
-              $item = idx($like, 'name');
-
+              $id = $like->id;
+              $item = $like->name;
               // This display's the object that the user liked as a link to
               // that object's page.
           ?>
@@ -327,26 +348,6 @@ $app_name = idx($app_info, 'name', '');
         </ul>
       </div>
 
-      <div class="list">
-        <h3>Friends using this app</h3>
-        <ul class="friends">
-          <?php
-            foreach ($app_using_friends as $auf) {
-              // Extract the pieces of info we need from the requests above
-              $id = idx($auf, 'uid');
-              $name = idx($auf, 'name');
-          ?>
-          <li>
-            <a href="https://www.facebook.com/<?php echo he($id); ?>" target="_top">
-              <img src="https://graph.facebook.com/<?php echo he($id) ?>/picture?type=square" alt="<?php echo he($name); ?>">
-              <?php echo he($name); ?>
-            </a>
-          </li>
-          <?php
-            }
-          ?>
-        </ul>
-      </div>
     </section>
 
     <?php
